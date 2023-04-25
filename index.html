@@ -1,38 +1,53 @@
-
 <!DOCTYPE html>
 <html>
-<head>
-	<title>Llamada a API de WhatsApp Scraper</title>
-</head>
-<body>
-	<h1>Llamada a API de WhatsApp Scraper</h1>
-	<form>
-		<label for="phone">Teléfono:</label>
-		<input type="text" id="phone" name="phone"><br><br>
-		<button type="button" onclick="callAPI()">Llamar a la API</button>
-	</form>
-	<div id="result"></div>
-	<script>
-		async function callAPI() {
-			const phone = document.getElementById('phone').value;
-			const url = `https://whatsapp-scraper.p.rapidapi.com/wspicture?phone=${phone}`;
-			const options = {
-				method: 'GET',
-				headers: {
-					'content-type': 'application/octet-stream',
-					'X-RapidAPI-Key': '41cc7ae519mshec0ca58538fbba6p1185d1jsn5da840d814c0',
-					'X-RapidAPI-Host': 'whatsapp-scraper.p.rapidapi.com'
-				}
-			};
-			try {
-				const response = await fetch(url, options);
-				const result = await response.text();
-				console.log(result);
-				document.getElementById('result').innerHTML = result;
-			} catch (error) {
-				console.error(error);
-			}
-		}
-	</script>
-</body>
+  <head>
+    <meta charset="utf-8">
+    <title>API Example</title>
+  </head>
+  <body>
+    <h1>API Example</h1>
+    <form id="myForm">
+      <label for="token">Token:</label>
+      <input type="text" id="token" name="token"><br><br>
+      <label for="phone">Phone:</label>
+      <input type="text" id="phone" name="phone"><br><br>
+      <button type="button" onclick="callApi()">Submit</button>
+    </form>
+    <div id="result"></div>
+
+    <script>
+      const url = 'https://whatsapp-scraper.p.rapidapi.com/wspicture?phone=34605797764';
+      const apiKey = '41cc7ae519mshec0ca58538fbba6p1185d1jsn5da840d814c0';
+
+      async function callApi() {
+        const token = document.getElementById('token').value;
+        const phone = document.getElementById('phone').value;
+
+        const requestOptions = {
+          method: 'GET',
+          headers: {
+            'content-type': 'application/octet-stream',
+            'X-RapidAPI-Key': apiKey,
+            'X-RapidAPI-Host': 'whatsapp-scraper.p.rapidapi.com'
+          }
+        };
+
+        const response = await fetch(url + `&token=${token}&phone=${phone}`, requestOptions);
+        const result = await response.text();
+
+        const resultDiv = document.getElementById('result');
+        if (result.startsWith('http')) {
+          // if the result is a URL, create an img element with the URL as its src
+          const img = document.createElement('img');
+          img.src = result;
+          resultDiv.innerHTML = '';
+          resultDiv.appendChild(img);
+        } else {
+          // if the result is not a URL, just display the text
+          resultDiv.textContent = result;
+        }
+      }
+    </script>
+  </body>
 </html>
+
