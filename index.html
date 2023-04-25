@@ -1,10 +1,38 @@
+
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Whatsapp profile pic</title>
+	<title>Llamada a API de WhatsApp Scraper</title>
 </head>
 <body>
-	<h1>by inUtil-Labs</h1>
-	<p>Esto es una demo de whatsapp profile pic.</p>
+	<h1>Llamada a API de WhatsApp Scraper</h1>
+	<form>
+		<label for="phone">Teléfono:</label>
+		<input type="text" id="phone" name="phone"><br><br>
+		<button type="button" onclick="callAPI()">Llamar a la API</button>
+	</form>
+	<div id="result"></div>
+	<script>
+		async function callAPI() {
+			const phone = document.getElementById('phone').value;
+			const url = `https://whatsapp-scraper.p.rapidapi.com/wspicture?phone=${phone}`;
+			const options = {
+				method: 'GET',
+				headers: {
+					'content-type': 'application/octet-stream',
+					'X-RapidAPI-Key': '41cc7ae519mshec0ca58538fbba6p1185d1jsn5da840d814c0',
+					'X-RapidAPI-Host': 'whatsapp-scraper.p.rapidapi.com'
+				}
+			};
+			try {
+				const response = await fetch(url, options);
+				const result = await response.text();
+				console.log(result);
+				document.getElementById('result').innerHTML = result;
+			} catch (error) {
+				console.error(error);
+			}
+		}
+	</script>
 </body>
 </html>
