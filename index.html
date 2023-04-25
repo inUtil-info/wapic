@@ -18,6 +18,7 @@
 		<button id="btn-consultar">Consultar</button>
 	</div>
 
+	<p id="whatsapp-url"></p>
 	<img id="whatsapp-image" src="" alt="Imagen de WhatsApp">
 
 	<script>
@@ -50,10 +51,23 @@
 					return response.url;
 				})
 				.then(imageUrl => {
-					// Mostramos la imagen y asignamos la URL de la imagen al src de la etiqueta img
-					const whatsappImage = document.getElementById('whatsapp-image');
-					whatsappImage.style.display = 'block';
+					// Mostramos la URL de la imagen
+					const whatsappUrl = document.getElementById('whatsapp-url');
+					whatsappUrl.innerText = `URL de la imagen: ${imageUrl}`;
+
+					// Creamos una nueva imagen y le asignamos la URL de la imagen
+					const whatsappImage = new Image();
+					whatsappImage.onload = () => {
+						// Si la imagen se ha cargado correctamente, la mostramos y ocultamos el mensaje de error
+						whatsappImage.style.display = 'block';
+						document.getElementById('error-message').style.display = 'none';
+					};
+					whatsappImage.onerror = () => {
+						// Si la imagen no se ha cargado correctamente, mostramos un mensaje de error
+						document.getElementById('error-message').style.display = 'block';
+					};
 					whatsappImage.src = imageUrl;
+					document.getElementById('whatsapp-image').replaceWith(whatsappImage);
 				})
 				.catch(error => {
 					console.error(error);
