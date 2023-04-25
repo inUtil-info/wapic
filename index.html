@@ -2,6 +2,11 @@
 <html>
 <head>
 	<title>Ejemplo de llamada a API con JavaScript</title>
+	<style>
+		#whatsapp-image {
+			display: none;
+		}
+	</style>
 </head>
 <body>
 
@@ -45,8 +50,9 @@
 					return response.url;
 				})
 				.then(imageUrl => {
-					// Asignamos la URL de la imagen al src de la etiqueta img
+					// Mostramos la imagen y asignamos la URL de la imagen al src de la etiqueta img
 					const whatsappImage = document.getElementById('whatsapp-image');
+					whatsappImage.style.display = 'block';
 					whatsappImage.src = imageUrl;
 				})
 				.catch(error => {
@@ -59,5 +65,3 @@
 
 </body>
 </html>
-
-
