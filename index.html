@@ -8,6 +8,8 @@
     <form>
       <label for="telefono">Introduce el número de teléfono:</label><br>
       <input type="text" id="telefono" name="telefono"><br>
+      <label for="token">Introduce el token:</label><br>
+      <input type="text" id="token" name="token"><br>
       <button type="button" onclick="buscarImagen()">Buscar imagen</button>
     </form>
     <div id="respuesta"></div>
@@ -15,12 +17,13 @@
     <script>
       async function buscarImagen() {
         const telefono = document.getElementById('telefono').value;
-        const url = `https://whatsapp-scraper.p.rapidapi.com/wspicture?phone=${telefono}`;
+        const token = document.getElementById('token').value;
+        const url = `https://whatsapp-scraper.p.rapidapi.com/free/wspicture?phone=${telefono}&token=${token}`;
         const options = {
           method: 'GET',
           headers: {
             'content-type': 'application/octet-stream',
-            'X-RapidAPI-Key': '41cc7ae519mshec0ca58538fbba6p1185d1jsn5da840d814c0',
+            'X-RapidAPI-Key': '0b2157bfc4mshe1bc5572ac284d7p17fde2jsnadff8abf693a',
             'X-RapidAPI-Host': 'whatsapp-scraper.p.rapidapi.com'
           }
         };
