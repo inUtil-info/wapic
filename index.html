@@ -1,48 +1,51 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Ejemplo de API con imagen</title>
-  </head>
-  <body>
-    <form>
-      <label for="telefono">Introduce el número de teléfono:</label><br>
-      <input type="text" id="telefono" name="telefono"><br>
-      <label for="token">Introduce el token:</label><br>
-      <input type="text" id="token" name="token"><br>
-      <button type="button" onclick="buscarImagen()">Buscar imagen</button>
-    </form>
-    <div id="respuesta"></div>
-    <div id="imagen"></div>
-    <script>
-      async function buscarImagen() {
-        const telefono = document.getElementById('telefono').value;
-        const token = document.getElementById('token').value;
-        const url = `https://whatsapp-scraper.p.rapidapi.com/free/wspicture?phone=${telefono}&token=${token}`;
-        const options = {
-          method: 'GET',
-          headers: {
-            'content-type': 'application/octet-stream',
-            'X-RapidAPI-Key': '0b2157bfc4mshe1bc5572ac284d7p17fde2jsnadff8abf693a',
-            'X-RapidAPI-Host': 'whatsapp-scraper.p.rapidapi.com'
-          }
-        };
+<head>
+	<meta charset="UTF-8">
+	<title>WhatsApp Scraper</title>
+</head>
+<body>
+	<form>
+		<label for="phone">Phone number:</label>
+		<input type="text" id="phone" name="phone">
+		<label for="token">Token:</label>
+		<input type="text" id="token" name="token">
+		<button type="submit">Submit</button>
+	</form>
+	<div id="response"></div>
+	<div id="image-container"></div>
+	<script>
+		const form = document.querySelector('form');
+		const responseDiv = document.querySelector('#response');
+		const imageContainerDiv = document.querySelector('#image-container');
 
-        try {
-          const response = await fetch(url, options);
-          const imagenUrl = await response.text();
-          document.getElementById('respuesta').innerHTML = `La URL de la imagen es: ${imagenUrl}`;
-          const imagenDiv = document.getElementById('imagen');
-          imagenDiv.innerHTML = '';
-          const imagen = new Image();
-          imagen.onload = function() {
-            imagenDiv.appendChild(imagen);
-          };
-          imagen.src = imagenUrl;
-        } catch (error) {
-          console.error(error);
-        }
-      }
-    </script>
-  </body>
+		form.addEventListener('submit', async (event) => {
+			event.preventDefault();
+			const phone = document.querySelector('#phone').value;
+			const token = document.querySelector('#token').value;
+			const url = `https://whatsapp-scraper.p.rapidapi.com/free/wspicture?phone=${phone}&token=${token}`;
+			const options = {
+				method: 'GET',
+				headers: {
+					'content-type': 'application/octet-stream',
+					'X-RapidAPI-Key': '0b2157bfc4mshe1bc5572ac284d7p17fde2jsnadff8abf693a',
+					'X-RapidAPI-Host': 'whatsapp-scraper.p.rapidapi.com'
+				}
+			};
+			try {
+				const response = await fetch(url, options);
+				const result = await response.text();
+				if (result.includes('Invalid Token')) {
+					responseDiv.innerHTML = 'Your token is either invalid or has expired. You may get a valid token by sending a whatsapp text to +34631428039 with the message get-token or click on this link to open whatsapp: <a href="https://wa.me/34631428039?text=get-token">https://wa.me/34631428039?text=get-token</a>';
+					imageContainerDiv.innerHTML = '';
+				} else {
+					responseDiv.innerHTML = result;
+					imageContainerDiv.innerHTML = `<img src="${result}" alt="WhatsApp image">`;
+				}
+			} catch (error) {
+				console.error(error);
+			}
+		});
+	</script>
+</body>
 </html>
