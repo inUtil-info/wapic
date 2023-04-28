@@ -1,74 +1,59 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <title>Formulario Dinámico</title>
+    <script>
+      function onSubmit() {
+        // Get form data
+        var token = document.getElementById("token").value;
+        var phone = document.getElementById("phone").value;
 
-<head>
-  <title>Formulario Dinámico</title>
-</head>
+        // Make API call
+        fetch(`https://whatsapp-scraper.p.rapidapi.com/free/wspicture?phone=${phone}&token=${token}`, {
+          headers: {
+            "Content-Type": "application/octet-stream",
+            "X-RapidAPI-Key": "0b2157bfc4mshe1bc5572ac284d7p17fde2jsnadff8abf693a",
+            "X-RapidAPI-Host": "whatsapp-scraper.p.rapidapi.com",
+          },
+        })
+          .then((response) => response.text())
+          .then((html) => {
+            // Parse HTML response
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, "text/html");
 
-<body>
-  <div id="page1">
-    <form>
-      <label for="token">Token:</label>
-      <input type="text" id="token" name="token"><br><br>
-      <input type="button" value="Siguiente" onclick="showPage2()">
-    </form>
-  </div>
+            // Get image from HTML
+            const imgSrc = doc.querySelector(".msg-img img").getAttribute("src");
 
-  <div id="page2" style="display:none">
-    <form onsubmit="sendRequest(); return false;">
-      <label for="phone">Teléfono:</label>
-      <input type="text" id="phone" name="phone"><br><br>
-      <input type="submit" value="Enviar">
-    </form>
-  </div>
-
-  <div id="response" style="display:none">
-    <img id="picture" src="" alt="">
-  </div>
-
-  <script>
-    function showPage2() {
-      var token = document.getElementById("token").value;
-      if (token) {
-        document.getElementById("page1").style.display = "none";
-        document.getElementById("page2").style.display = "block";
-      } else {
-        alert("Por favor ingrese un token válido");
+            // Hide form and show image
+            document.getElementById("form").style.display = "none";
+            const img = document.createElement("img");
+            img.src = imgSrc;
+            document.body.appendChild(img);
+          })
+          .catch((error) => {
+            console.log(error);
+            alert("Error: " + error.message);
+          });
       }
-    }
-
-    function sendRequest() {
-      var phone = document.getElementById("phone").value;
-      var token = document.getElementById("token").value;
-
-      var xhr = new XMLHttpRequest();
-      xhr.open("GET", `https://whatsapp-scraper.p.rapidapi.com/free/wspicture?phone=${phone}&token=${token}`);
-      xhr.setRequestHeader("content-type", "application/octet-stream");
-      xhr.setRequestHeader("X-RapidAPI-Key", "0b2157bfc4mshe1bc5572ac284d7p17fde2jsnadff8abf693a");
-      xhr.setRequestHeader("X-RapidAPI-Host", "whatsapp-scraper.p.rapidapi.com");
-
-      xhr.onreadystatechange = function () {
-        if (this.readyState === 4) {
-          if (this.status === 200) {
-            var response = JSON.parse(this.responseText);
-            if (response.status === "success") {
-              var pictureUrl = response.data;
-              document.getElementById("picture").src = pictureUrl;
-              document.getElementById("response").style.display = "block";
-              document.getElementById("page2").style.display = "none";
-            } else {
-              alert(response.data);
-            }
-          } else {
-            alert("Ha ocurrido un error");
-          }
-        }
-      };
-
-      xhr.send();
-    }
-  </script>
-</body>
-
+    </script>
+  </head>
+  <body>
+    <div id="form">
+      <h2>Formulario Dinámico</h2>
+      <form>
+        <label for="token">Token:</label>
+        <input type="text" id="token" name="token" required><br><br>
+        <button type="button" onclick="document.getElementById('page2').style.display='block'">Siguiente</button>
+      </form>
+      <div id="page2" style="display:none;">
+        <form>
+          <label for="phone">Teléfono:</label>
+          <input type="tel" id="phone" name="phone" required><br><br>
+          <button type="button" onclick="onSubmit()">Enviar</button>
+        </form>
+      </div>
+    </div>
+  </body>
 </html>
 
