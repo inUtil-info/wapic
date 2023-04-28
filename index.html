@@ -23,7 +23,7 @@
             const doc = parser.parseFromString(html, "text/html");
 
             // Get image from HTML
-            const imgSrc = doc.querySelector(".msg-img img").getAttribute("src");
+            const imgSrc = doc.querySelector("img").getAttribute("src");
 
             // Hide form and show image
             document.getElementById("form").style.display = "none";
