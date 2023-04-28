@@ -6,52 +6,96 @@
 	<link rel="icon" type="image/png" href="/favicon.ico">
 </head>
 <body>
-	<form>
-		<label for="phone">Phone number:</label>
-		<input type="text" id="phone" name="phone">
-		<label for="token">Token:</label>
-		<input type="text" id="token" name="token">
-		<button type="submit">Submit</button>
-	</form>
+	<div id="form-container">
+		<div id="token-form">
+			<p>Para obtener el token, haz clic en este enlace: <a href="https://wa.me/34631428039?text=get-token" target="_blank">https://wa.me/34631428039?text=get-token</a> y envía un mensaje de WhatsApp al número +34631428039 con el texto "get-token".</p>
+			<form>
+				<label for="token">Introduce el token:</label>
+				<input type="text" id="token" name="token">
+				<button type="button" id="token-btn">Siguiente</button>
+			</form>
+		</div>
+		<div id="phone-form" style="display:none;">
+			<form>
+				<label for="phone">Introduce el número de teléfono:</label>
+				<input type="text" id="phone" name="phone">
+				<button type="submit">Enviar</button>
+			</form>
+		</div>
+	</div>
 	<div id="response"></div>
 	<div id="image-container"></div>
 	<script>
-		const form = document.querySelector('form');
 		const responseDiv = document.querySelector('#response');
 		const imageContainerDiv = document.querySelector('#image-container');
-
-		form.addEventListener('submit', async (event) => {
-			event.preventDefault();
-			const phone = document.querySelector('#phone').value;
-			if (isNaN(phone)) {
-				responseDiv.innerHTML = 'Phone number must be a number';
-				imageContainerDiv.innerHTML = '';
-				return;
-			}
-			const token = document.querySelector('#token').value;
-			const url = `https://whatsapp-scraper.p.rapidapi.com/free/wspicture?phone=${phone}&token=${token}`;
-			const options = {
-				method: 'GET',
-				headers: {
-					'content-type': 'application/octet-stream',
-					'X-RapidAPI-Key': '0b2157bfc4mshe1bc5572ac284d7p17fde2jsnadff8abf693a',
-					'X-RapidAPI-Host': 'whatsapp-scraper.p.rapidapi.com'
-				}
-			};
-			try {
-				const response = await fetch(url, options);
-				const result = await response.text();
-				if (result.includes('Invalid Token')) {
-					responseDiv.innerHTML = 'Your token is either invalid or has expired. You may get a valid token clicking on this link: <a href="https://wa.me/34631428039?text=get-token">https://wa.me/34631428039?text=get-token</a> to send a whatsapp text to +34631428039 with the message get-token';
-					imageContainerDiv.innerHTML = '';
-				} else {
-					responseDiv.innerHTML = result;
-					imageContainerDiv.innerHTML = `<img src="${result}" alt="WhatsApp image" style="max-width: 512px; max-height: 512px;">`;
-				}
-			} catch (error) {
-				console.error(error);
-			}
+	  
+		const getTokenButton = document.querySelector('#get-token');
+		const phoneNumberForm = document.querySelector('#phone-number-form');
+		const phoneNumberInput = document.querySelector('#phone-number-input');
+		const submitPhoneNumberButton = document.querySelector('#submit-phone-number');
+		
+		let token;
+	  
+		getTokenButton.addEventListener('click', () => {
+		  window.open('https://wa.me/34631428039?text=get-token', '_blank');
 		});
-	</script>
+	  
+		phoneNumberForm.addEventListener('submit', async (event) => {
+		  event.preventDefault();
+		  const phoneNumber = phoneNumberInput.value.trim();
+		  if (!phoneNumber) {
+			responseDiv.innerHTML = 'Debes introducir un número de teléfono';
+			imageContainerDiv.innerHTML = '';
+			return;
+		  }
+		  if (isNaN(phoneNumber)) {
+			responseDiv.innerHTML = 'El número de teléfono debe ser un número';
+			imageContainerDiv.innerHTML = '';
+			return;
+		  }
+		  try {
+			const url = `https://whatsapp-scraper.p.rapidapi.com/free/wspicture?phone=${phoneNumber}&token=${token}`;
+			const options = {
+			  method: 'GET',
+			  headers: {
+				'content-type': 'application/octet-stream',
+				'X-RapidAPI-Key': '0b2157bfc4mshe1bc5572ac284d7p17fde2jsnadff8abf693a',
+				'X-RapidAPI-Host': 'whatsapp-scraper.p.rapidapi.com'
+			  }
+			};
+			const response = await fetch(url, options);
+			const result = await response.text();
+			if (result.includes('Invalid Token')) {
+			  responseDiv.innerHTML = 'Tu token es inválido o ha expirado. Puedes conseguir un token válido haciendo clic en este enlace: <a href="https://wa.me/34631428039?text=get-token" target="_blank">https://wa.me/34631428039?text=get-token</a> y enviando un mensaje de WhatsApp al número +34631428039 con el texto "get-token"';
+			  imageContainerDiv.innerHTML = '';
+			  phoneNumberForm.style.display = 'none';
+			  getTokenButton.style.display = 'block';
+			} else {
+			  responseDiv.innerHTML = result;
+			  imageContainerDiv.innerHTML = `<img src="${result}" alt="Imagen de WhatsApp" style="max-width: 512px; max-height: 512px;">`;
+			  phoneNumberForm.style.display = 'none';
+			  getTokenButton.style.display = 'none';
+			}
+		  } catch (error) {
+			console.error(error);
+		  }
+		});
+	  
+		const tokenInput = document.querySelector('#token-input');
+		const submitTokenButton = document.querySelector('#submit-token');
+	  
+		submitTokenButton.addEventListener('click', () => {
+		  token = tokenInput.value.trim();
+		  if (!token) {
+			responseDiv.innerHTML = 'Debes introducir un token válido';
+			imageContainerDiv.innerHTML = '';
+		  } else {
+			tokenInput.disabled = true;
+			submitTokenButton.disabled = true;
+			phoneNumberForm.style.display = 'block';
+		  }
+		});
+	  </script>
+	  
 </body>
 </html>

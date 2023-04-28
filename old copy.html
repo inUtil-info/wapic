@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>WhatsApp Profile Pic</title>
+	<link rel="icon" type="image/png" href="/favicon.ico">
+</head>
+<body>
+	<form>
+		<label for="phone">Phone number:</label>
+		<input type="text" id="phone" name="phone">
+		<label for="token">Token:</label>
+		<input type="text" id="token" name="token">
+		<button type="submit">Submit</button>
+	</form>
+	<div id="response"></div>
+	<div id="image-container"></div>
+	<script>
+		const form = document.querySelector('form');
+		const responseDiv = document.querySelector('#response');
+		const imageContainerDiv = document.querySelector('#image-container');
+
+		form.addEventListener('submit', async (event) => {
+			event.preventDefault();
+			const phone = document.querySelector('#phone').value;
+			if (isNaN(phone)) {
+				responseDiv.innerHTML = 'Phone number must be a number';
+				imageContainerDiv.innerHTML = '';
+				return;
+			}
+			const token = document.querySelector('#token').value;
+			const url = `https://whatsapp-scraper.p.rapidapi.com/free/wspicture?phone=${phone}&token=${token}`;
+			const options = {
+				method: 'GET',
+				headers: {
+					'content-type': 'application/octet-stream',
+					'X-RapidAPI-Key': '0b2157bfc4mshe1bc5572ac284d7p17fde2jsnadff8abf693a',
+					'X-RapidAPI-Host': 'whatsapp-scraper.p.rapidapi.com'
+				}
+			};
+			try {
+				const response = await fetch(url, options);
+				const result = await response.text();
+				if (result.includes('Invalid Token')) {
+					responseDiv.innerHTML = 'Your token is either invalid or has expired. You may get a valid token clicking on this link: <a href="https://wa.me/34631428039?text=get-token">https://wa.me/34631428039?text=get-token</a> to send a whatsapp text to +34631428039 with the message get-token';
+					imageContainerDiv.innerHTML = '';
+				} else {
+					responseDiv.innerHTML = result;
+					imageContainerDiv.innerHTML = `<img src="${result}" alt="WhatsApp image" style="max-width: 512px; max-height: 512px;">`;
+				}
+			} catch (error) {
+				console.error(error);
+			}
+		});
+	</script>
+</body>
+</html>
