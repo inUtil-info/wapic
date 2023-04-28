@@ -27,9 +27,14 @@
 
             // Hide form and show image
             document.getElementById("form").style.display = "none";
+            const imgDiv = document.createElement("div");
+            imgDiv.id = "image";
+            document.body.appendChild(imgDiv);
             const img = document.createElement("img");
+            img.onload = function () {
+              imgDiv.appendChild(img);
+            };
             img.src = imgSrc;
-            document.body.appendChild(img);
           })
           .catch((error) => {
             console.log(error);
@@ -56,4 +61,3 @@
     </div>
   </body>
 </html>
-
