@@ -1,59 +1,74 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-	<title>Mi Formulario</title>
-	<meta charset="utf-8">
+  <title>Formulario Dinámico</title>
 </head>
+
 <body>
-	<form id="myForm">
-		<fieldset>
-			<legend>Formulario</legend>
-			<label>Token:</label>
-			<input type="text" name="token" required><br><br>
-			<button type="button" onclick="next()">Siguiente</button>
-		</fieldset>
-		<fieldset id="second" style="display: none">
-			<legend>Formulario</legend>
-			<label>Teléfono:</label>
-			<input type="text" name="phone" required><br><br>
-			<button type="button" onclick="submitForm()">Enviar</button>
-		</fieldset>
-	</form>
-	<div id="response"></div>
-	<div id="imageContainer"></div>
-	<script>
-		function next() {
-			document.getElementById('myForm').firstElementChild.style.display = 'none';
-			document.getElementById('second').style.display = 'block';
-		}
+  <div id="page1">
+    <form>
+      <label for="token">Token:</label>
+      <input type="text" id="token" name="token"><br><br>
+      <input type="button" value="Siguiente" onclick="showPage2()">
+    </form>
+  </div>
 
-		function submitForm() {
-			const form = document.getElementById('myForm');
-			const token = form.elements['token'].value;
-			const phone = form.elements['phone'].value;
+  <div id="page2" style="display:none">
+    <form onsubmit="sendRequest(); return false;">
+      <label for="phone">Teléfono:</label>
+      <input type="text" id="phone" name="phone"><br><br>
+      <input type="submit" value="Enviar">
+    </form>
+  </div>
 
-			const xhr = new XMLHttpRequest();
-			xhr.open("GET", `https://whatsapp-scraper.p.rapidapi.com/free/wspicture?phone=${phone}&token=${token}`);
-			xhr.setRequestHeader("content-type", "application/octet-stream");
-			xhr.setRequestHeader("X-RapidAPI-Key", "0b2157bfc4mshe1bc5572ac284d7p17fde2jsnadff8abf693a");
-			xhr.setRequestHeader("X-RapidAPI-Host", "whatsapp-scraper.p.rapidapi.com");
+  <div id="response" style="display:none">
+    <img id="picture" src="" alt="">
+  </div>
 
-			xhr.onreadystatechange = function() {
-				if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-					const response = JSON.parse(this.responseText);
-					if (response.success) {
-						const img = document.createElement('img');
-						img.src = response.data;
-						document.getElementById('imageContainer').appendChild(img);
-					} else {
-						document.getElementById('response').innerHTML = response.message;
-					}
-				}
-			}
+  <script>
+    function showPage2() {
+      var token = document.getElementById("token").value;
+      if (token) {
+        document.getElementById("page1").style.display = "none";
+        document.getElementById("page2").style.display = "block";
+      } else {
+        alert("Por favor ingrese un token válido");
+      }
+    }
 
-			xhr.send();
-			document.getElementById('second').style.display = 'none';
-		}
-	</script>
+    function sendRequest() {
+      var phone = document.getElementById("phone").value;
+      var token = document.getElementById("token").value;
+
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", `https://whatsapp-scraper.p.rapidapi.com/free/wspicture?phone=${phone}&token=${token}`);
+      xhr.setRequestHeader("content-type", "application/octet-stream");
+      xhr.setRequestHeader("X-RapidAPI-Key", "0b2157bfc4mshe1bc5572ac284d7p17fde2jsnadff8abf693a");
+      xhr.setRequestHeader("X-RapidAPI-Host", "whatsapp-scraper.p.rapidapi.com");
+
+      xhr.onreadystatechange = function () {
+        if (this.readyState === 4) {
+          if (this.status === 200) {
+            var response = JSON.parse(this.responseText);
+            if (response.status === "success") {
+              var pictureUrl = response.data;
+              document.getElementById("picture").src = pictureUrl;
+              document.getElementById("response").style.display = "block";
+              document.getElementById("page2").style.display = "none";
+            } else {
+              alert(response.data);
+            }
+          } else {
+            alert("Ha ocurrido un error");
+          }
+        }
+      };
+
+      xhr.send();
+    }
+  </script>
 </body>
+
 </html>
+
