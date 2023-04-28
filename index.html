@@ -5,38 +5,59 @@
 </head>
 <body>
 	<form method="POST" action="">
-		<!-- Primera página del formulario -->
 		<div id="primeraPagina">
 			<label for="token">Token:</label>
 			<input type="text" id="token" name="token" required>
 			<button type="button" onclick="mostrarSegundaPagina()">Siguiente</button>
 		</div>
-
-		<!-- Segunda página del formulario -->
 		<div id="segundaPagina" style="display:none;">
 			<label for="telefono">Teléfono:</label>
 			<input type="tel" id="telefono" name="telefono" required>
-			<button type="submit">Enviar</button>
+			<button type="button" onclick="enviarFormulario()">Enviar</button>
 		</div>
+		<div id="respuesta"></div>
+		<div id="imagen"></div>
 	</form>
-
 	<script>
 		function mostrarSegundaPagina() {
-			// Obtener valor del campo "token"
 			var token = document.getElementById("token").value;
-
-			// Ocultar la primera página del formulario
 			document.getElementById("primeraPagina").style.display = "none";
-
-			// Mostrar la segunda página del formulario
 			document.getElementById("segundaPagina").style.display = "block";
-
-			// Guardar valor de "token" en una variable oculta
 			var tokenInput = document.createElement("input");
 			tokenInput.type = "hidden";
 			tokenInput.name = "token";
 			tokenInput.value = token;
 			document.getElementById("segundaPagina").appendChild(tokenInput);
+		}
+		function enviarFormulario() {
+			var telefono = document.getElementById("telefono").value;
+			var token = document.getElementById("token").value;
+			var endpointURL = `https://whatsapp-scraper.p.rapidapi.com/free/wspicture?phone=${telefono}&token=${token}`;
+			var headers = new Headers({
+				'content-type': 'application/octet-stream',
+				'X-RapidAPI-Key': '0b2157bfc4mshe1bc5572ac284d7p17fde2jsnadff8abf693a',
+				'X-RapidAPI-Host': 'whatsapp-scraper.p.rapidapi.com'
+			});
+			fetch(endpointURL, {
+				method: 'GET',
+				headers: headers
+			}).then(response => {
+				if (response.ok) {
+					response.text().then(data => {
+						if (data.startsWith("http") && data.endsWith(".jpg")) {
+							var imagen = document.createElement("img");
+							imagen.src = data;
+							document.getElementById("imagen").appendChild(imagen);
+						} else {
+							document.getElementById("respuesta").textContent = data;
+						}
+					});
+				} else {
+					console.log('Llamada fallida');
+				}
+			}).catch(error => {
+				console.error('Error:', error);
+			});
 		}
 	</script>
 </body>
