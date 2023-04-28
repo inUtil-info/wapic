@@ -6,9 +6,11 @@
 <body>
 	<form method="POST" action="">
 		<!-- Primera página del formulario -->
-		<label for="token">Token:</label>
-		<input type="text" id="token" name="token" required>
-		<button type="button" onclick="mostrarSegundaPagina()">Siguiente</button>
+		<div id="primeraPagina">
+			<label for="token">Token:</label>
+			<input type="text" id="token" name="token" required>
+			<button type="button" onclick="mostrarSegundaPagina()">Siguiente</button>
+		</div>
 
 		<!-- Segunda página del formulario -->
 		<div id="segundaPagina" style="display:none;">
@@ -22,10 +24,13 @@
 		function mostrarSegundaPagina() {
 			// Obtener valor del campo "token"
 			var token = document.getElementById("token").value;
-			
+
+			// Ocultar la primera página del formulario
+			document.getElementById("primeraPagina").style.display = "none";
+
 			// Mostrar la segunda página del formulario
 			document.getElementById("segundaPagina").style.display = "block";
-			
+
 			// Guardar valor de "token" en una variable oculta
 			var tokenInput = document.createElement("input");
 			tokenInput.type = "hidden";
