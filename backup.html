@@ -7,31 +7,14 @@
 </head>
 <body>
 	<form>
-		<div id="part1">
-			<label for="phone">Phone number:</label>
-			<input type="text" id="phone" name="phone">
-			<button type="button" onclick="mostrarParte2()">Next</button>
-		</div>
-		<div id="part2" style="display: none;">
-			<label for="token">Token:</label>
-			<input type="text" id="token" name="token">
-			<button type="submit">Submit</button>
-		</div>
+		<label for="phone">Phone number:</label>
+		<input type="text" id="phone" name="phone">
+		<label for="token">Token:</label>
+		<input type="text" id="token" name="token">
+		<button type="submit">Submit</button>
 	</form>
-
 	<div id="response"></div>
 	<div id="image-container"></div>
-
-	<script>
-		function mostrarParte2() {
-			// Ocultar la parte 1
-			document.getElementById("part1").style.display = "none";
-			// Mostrar la parte 2
-			document.getElementById("part2").style.display = "block";
-		}
-	</script>
-	
-	
 	<script>
 		const form = document.querySelector('form');
 		const responseDiv = document.querySelector('#response');
