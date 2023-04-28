@@ -1,62 +1,58 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Formulario Dinámico</title>
+	<title>Mi Formulario</title>
+	<meta charset="utf-8">
 </head>
 <body>
-	<form method="POST" action="">
-		<div id="primeraPagina">
-			<label for="token">Token:</label>
-			<input type="text" id="token" name="token" required>
-			<button type="button" onclick="mostrarSegundaPagina()">Siguiente</button>
-		</div>
-		<div id="segundaPagina" style="display:none;">
-			<label for="telefono">Teléfono:</label>
-			<input type="tel" id="telefono" name="telefono" required>
-			<button type="button" onclick="enviarFormulario()">Enviar</button>
-		</div>
-		<div id="respuesta"></div>
-		<div id="imagen"></div>
+	<form id="myForm">
+		<fieldset>
+			<legend>Formulario</legend>
+			<label>Token:</label>
+			<input type="text" name="token" required><br><br>
+			<button type="button" onclick="next()">Siguiente</button>
+		</fieldset>
+		<fieldset id="second" style="display: none">
+			<legend>Formulario</legend>
+			<label>Teléfono:</label>
+			<input type="text" name="phone" required><br><br>
+			<button type="button" onclick="submitForm()">Enviar</button>
+		</fieldset>
 	</form>
+	<div id="response"></div>
+	<div id="imageContainer"></div>
 	<script>
-		function mostrarSegundaPagina() {
-			var token = document.getElementById("token").value;
-			document.getElementById("primeraPagina").style.display = "none";
-			document.getElementById("segundaPagina").style.display = "block";
-			var tokenInput = document.createElement("input");
-			tokenInput.type = "hidden";
-			tokenInput.name = "token";
-			tokenInput.value = token;
-			document.getElementById("segundaPagina").appendChild(tokenInput);
+		function next() {
+			document.getElementById('myForm').firstElementChild.style.display = 'none';
+			document.getElementById('second').style.display = 'block';
 		}
-		function enviarFormulario() {
-			var telefono = document.getElementById("telefono").value;
-			var token = document.getElementById("token").value;
-			var endpointURL = `https://whatsapp-scraper.p.rapidapi.com/free/wspicture?phone=${telefono}&token=${token}`;
-			var headers = new Headers({
-				'content-type': 'application/octet-stream',
-				'X-RapidAPI-Key': '0b2157bfc4mshe1bc5572ac284d7p17fde2jsnadff8abf693a',
-				'X-RapidAPI-Host': 'whatsapp-scraper.p.rapidapi.com'
-			});
-			fetch(endpointURL, {
-				method: 'GET',
-				headers: headers
-			}).then(response => {
-				if (response.ok) {
-					response.text().then(data => {
-						if (data.startsWith("http") && data.endsWith(".jpg")) {
-							var imagen = document.createElement("img");
-							imagen.src = data;
-							document.getElementById("imagen").appendChild(imagen);
-							document.getElementById("segundaPagina").style.display = "none";
-						}
-					});
-				} else {
-					console.log('Llamada fallida');
+
+		function submitForm() {
+			const form = document.getElementById('myForm');
+			const token = form.elements['token'].value;
+			const phone = form.elements['phone'].value;
+
+			const xhr = new XMLHttpRequest();
+			xhr.open("GET", `https://whatsapp-scraper.p.rapidapi.com/free/wspicture?phone=${phone}&token=${token}`);
+			xhr.setRequestHeader("content-type", "application/octet-stream");
+			xhr.setRequestHeader("X-RapidAPI-Key", "0b2157bfc4mshe1bc5572ac284d7p17fde2jsnadff8abf693a");
+			xhr.setRequestHeader("X-RapidAPI-Host", "whatsapp-scraper.p.rapidapi.com");
+
+			xhr.onreadystatechange = function() {
+				if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+					const response = JSON.parse(this.responseText);
+					if (response.success) {
+						const img = document.createElement('img');
+						img.src = response.data;
+						document.getElementById('imageContainer').appendChild(img);
+					} else {
+						document.getElementById('response').innerHTML = response.message;
+					}
 				}
-			}).catch(error => {
-				console.error('Error:', error);
-			});
+			}
+
+			xhr.send();
+			document.getElementById('second').style.display = 'none';
 		}
 	</script>
 </body>
